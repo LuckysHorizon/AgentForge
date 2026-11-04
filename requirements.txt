@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+litellm
+python-dotenv
+pydantic
+tiktoken
+pytest
+httpx
