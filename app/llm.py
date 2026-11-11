@@ -1,42 +1,85 @@
 from litellm import completion
 
 from app.config import(
-    MODEL,
     get_api_key,
-    PRICE_INPUT,
-    PRICE_OUTPUT
+    get_model
 )
 
-from app.pricing import cost
-
-def call_llm(messages:list) -> dict:
+def call_llm(
+    messages,
+    temperature = 0.7,
+    top_p=1.0,
+    frequency_penalty=0.0,
+    presence_penalty=0.0,
+    max_tokens=500,
+    stop=None     
+):
     
     api_key = get_api_key()
 
     response = completion(
-        model = MODEL,
+        model = get_model(),
         messages=messages,
-        api_key=api_key
+        api_key=api_key,
+
+        temperature = temperature,
+        top_p = top_p,
+
+        frequency_penalty = frequency_penalty,
+        presence_penalty=presence_penalty,
+
+        max_tokens = max_tokens,
+        stop=stop 
+    )
+    # text = response.choices[0].message.content
+
+    # usage_data = response.usage 
+
+    # usage = {
+    #     "input_tokens": usage_data.prompt_tokens,
+    #     "output_tokens": usage_data.completion_tokens,
+    #     "total_tokens": usage_data.total_tokens
+    # } 
+
+    # total_cost = cost(
+    #     usage,
+    #     PRICE_INPUT,
+    #     PRICE_OUTPUT
+    # )
+
+    return response
+
+
+def stream_llm(messages, **kwargs):
+    api_key = get_api_key()
+    response = completion(
+        model = get_model(),
+        messages=messages,
+        api_key=api_key,
+        stream=True,
+        **kwargs
     )
 
-    text = response.choices[0].message.content
+    for chunk in response:
+        content =(
+            chunk.choices[0].delta.content
+        )
 
-    usage_data = response.usage 
+        if content:
+            yield content 
 
-    usage = {
-        "input_tokens": usage_data.prompt_tokens,
-        "output_tokens": usage_data.completion_tokens,
-        "total_tokens": usage_data.total_tokens
-    } 
 
-    total_cost = cost(
-        usage,
-        PRICE_INPUT,
-        PRICE_OUTPUT
+def generate_structured(
+        messages,
+        response_model
+):
+    response = completion(
+        model = get_model(),
+        messages = messages,
+        api_key=get_api_key(),
+        response_format=response_model
     )
 
-    return {
-        "text": text,
-        "usage": usage,
-        "cost": total_cost
-    }
+    content = response.choices[0].message.content 
+
+    return response_model.model_validate_json(content)
