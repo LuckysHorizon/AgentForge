@@ -160,6 +160,7 @@ PRICE_OUTPUT_PER_MILLION=0.50
 ```
 
 Replace the placeholder values with the appropriate provider, model identifier, API key, and pricing.
+`LLM_API_KEY` is used when the selected provider's specific key is not set.
 
 ## Supported LLM Providers
 
@@ -361,7 +362,8 @@ Live provider integration tests require valid API credentials and may incur API 
 |---|---|
 | `LLM_PROVIDER` | Selected LLM provider |
 | `LLM_MODEL` | Provider-specific model identifier |
-| `LLM_API_KEY` | API credential for the selected provider |
+| `LLM_API_KEY` | Optional fallback API credential; provider-specific keys take precedence |
+| `OPENAI_API_KEY`, `GROQ_API_KEY`, `ANTHROPIC_API_KEY` | Provider-specific API credentials |
 | `PRICE_INPUT_PER_MILLION` | Input price per million tokens |
 | `PRICE_OUTPUT_PER_MILLION` | Output price per million tokens |
 

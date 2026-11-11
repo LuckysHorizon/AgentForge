@@ -6,3 +6,5 @@ pydantic
 tiktoken
 pytest
 httpx
+sentence-transformers
+numpy

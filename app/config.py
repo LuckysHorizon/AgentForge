@@ -6,8 +6,8 @@ PROVIDER = os.getenv("LLM_PROVIDER","groq").lower()
 
 MODEL = os.getenv(
     "LLM_MODEL",
-    "groq/your-model-id"
-)
+    ""
+).strip()
 
 API_KEYS = {
     "openai": os.getenv("OPENAI_API_KEY"),
@@ -28,10 +28,18 @@ def get_api_key():
         raise ValueError(
             f"unsupported provider: {PROVIDER}"
         )
-    api_key = API_KEYS[PROVIDER]
+    api_key = API_KEYS[PROVIDER] or os.getenv("LLM_API_KEY")
 
     if not api_key:
         raise ValueError(
             f"Missing API key for {PROVIDER}"
         )
     return api_key
+
+
+def get_model():
+    if not MODEL or "your-model-id" in MODEL.lower():
+        raise ValueError(
+            "Set LLM_MODEL to a valid LiteLLM provider/model identifier"
+        )
+    return MODEL
